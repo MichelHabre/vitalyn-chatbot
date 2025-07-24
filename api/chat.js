@@ -21,12 +21,14 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
 
     if (data.error) {
+      console.error('Hugging Face API error:', data.error);
       return res.status(500).json({ error: data.error });
     }
 
     const reply = data.generated_text || "Sorry, no response from AI.";
     res.status(200).json({ reply });
   } catch (error) {
+    console.error('Fetch error:', error);
     res.status(500).json({ error: error.message });
   }
 };
