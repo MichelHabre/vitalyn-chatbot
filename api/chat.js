@@ -1,16 +1,13 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method not allowed' });
-    return;
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { message } = req.body;
-
   if (!message) {
-    res.status(400).json({ error: 'No message provided' });
-    return;
+    return res.status(400).json({ error: 'No message provided' });
   }
 
   try {
@@ -31,4 +28,12 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     if (data.error) {
-      res.status(
+      return res.status(500).json({ error: data.error.message });
+    }
+
+    const reply = data.choices?.[0]?.message?.content || 'No reply from AI.';
+    res.status(200).json({ reply });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
