@@ -9,33 +9,24 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          { role: 'system', content: 'You are an AI chatbot coaching athletes to perform better.' },
-          { role: 'user', content: message },
-        ],
-      }),
+      body: JSON.stringify({ inputs: message }),
     });
 
     const data = await response.json();
 
-    console.log('OpenAI response:', JSON.stringify(data)); // Log full response
-
     if (data.error) {
-      return res.status(500).json({ error: data.error.message });
+      return res.status(500).json({ error: data.error });
     }
 
-    const reply = data.choices?.[0]?.message?.content || 'Sorry, no response from AI.';
+    const reply = data.generated_text || "Sorry, no response from AI.";
     res.status(200).json({ reply });
   } catch (error) {
-    console.error('Error:', error);
     res.status(500).json({ error: error.message });
   }
 };
