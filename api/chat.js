@@ -26,6 +26,8 @@ module.exports = async function handler(req, res) {
 
     const data = await response.json();
 
+    console.log('OpenAI response:', JSON.stringify(data)); // Log full response
+
     if (data.error) {
       return res.status(500).json({ error: data.error.message });
     }
@@ -33,6 +35,7 @@ module.exports = async function handler(req, res) {
     const reply = data.choices?.[0]?.message?.content || 'Sorry, no response from AI.';
     res.status(200).json({ reply });
   } catch (error) {
+    console.error('Error:', error);
     res.status(500).json({ error: error.message });
   }
 };
