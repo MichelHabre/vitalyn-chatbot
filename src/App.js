@@ -8,23 +8,27 @@ function App() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    
+
     const userMessage = { text: input, sender: "user" };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
 
-    // Placeholder: call your OpenAI API here
-    const botReply = await fakeBotReply(input);
-    setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
-  };
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
+      });
 
-  // Fake bot reply for demo
-  const fakeBotReply = (message) => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve("This is a placeholder reply. Replace with OpenAI API call.");
-      }, 1000);
-    });
+      const data = await res.json();
+      if (data.reply) {
+        setMessages(prev => [...prev, { text: data.reply, sender: 'bot' }]);
+      } else {
+        setMessages(prev => [...prev, { text: 'Sorry, no response from AI.', sender: 'bot' }]);
+      }
+    } catch (error) {
+      setMessages(prev => [...prev, { text: 'Error contacting AI.', sender: 'bot' }]);
+    }
   };
 
   return (
