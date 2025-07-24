@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+    const response = await fetch('https://api-inference.huggingface.co/pipeline/text-generation/gpt2', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: data.error });
     }
 
-    const reply = data.generated_text || "Sorry, no response from AI.";
+    const reply = data[0]?.generated_text || "Sorry, no response from AI.";
     res.status(200).json({ reply });
   } catch (error) {
     console.error('Fetch error:', error);
