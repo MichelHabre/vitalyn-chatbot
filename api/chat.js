@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are an AI chatbot coaching athletes to perform better.' },
           { role: 'user', content: message },
@@ -25,11 +25,12 @@ module.exports = async function handler(req, res) {
     });
 
     const data = await response.json();
+
     if (data.error) {
       return res.status(500).json({ error: data.error.message });
     }
 
-    const reply = data.choices?.[0]?.message?.content || 'No reply from AI.';
+    const reply = data.choices?.[0]?.message?.content || 'Sorry, no response from AI.';
     res.status(200).json({ reply });
   } catch (error) {
     res.status(500).json({ error: error.message });
