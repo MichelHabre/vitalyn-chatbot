@@ -5,7 +5,6 @@ function App() {
     { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
-  const [isDark, setIsDark] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
@@ -64,57 +63,54 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col ${isDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 text-black'} transition-all`}>
-      <header className="p-4 flex justify-between items-center shadow-md bg-opacity-80">
-        <h1 className="text-2xl font-bold">Vitalyn AI</h1>
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg shadow hover:scale-105 transition"
-        >
-          {isDark ? '☀ Light Mode' : '🌙 Dark Mode'}
-        </button>
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+      {/* Header */}
+      <header className="w-full max-w-3xl text-center mb-6">
+        <h1 className="text-4xl font-bold text-green-400">Vitalyn AI</h1>
+        <p className="text-gray-400 mt-2">Your AI Performance Coach</p>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
+      {/* Chat Container */}
+      <div className="w-full max-w-3xl bg-black bg-opacity-70 rounded-2xl shadow-lg p-6 flex flex-col h-[70vh] border border-green-500">
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
+              <div className={`max-w-xs px-4 py-3 rounded-2xl text-sm shadow-md ${
+                msg.sender === 'user'
+                  ? 'bg-green-500 text-black'
+                  : 'bg-gray-800 text-green-300 border border-green-500'
+              }`}>
+                {msg.text}
+              </div>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex justify-start mb-3">
+              <div className="bg-gray-800 text-green-400 px-4 py-3 rounded-2xl text-sm">
+                Typing...
+              </div>
+            </div>
+          )}
+          <div ref={chatEndRef}></div>
+        </div>
+
+        {/* Input Area */}
+        <div className="mt-4 flex">
+          <input
+            className="flex-1 bg-gray-900 text-white p-4 rounded-xl border border-green-500 focus:outline-none focus:ring-2 focus:ring-green-400"
+            placeholder="Type your message..."
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && sendMessage()}
+          />
+          <button
+            onClick={sendMessage}
+            className="ml-3 bg-green-500 text-black px-6 py-3 rounded-xl shadow hover:bg-green-400 transition font-bold"
           >
-            <div
-              className={`max-w-xs p-3 rounded-2xl shadow text-sm ${msg.sender === 'user'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-black dark:bg-gray-700 dark:text-white'}`}
-            >
-              {msg.text}
-            </div>
-          </div>
-        ))}
-
-        {isTyping && (
-          <div className="flex justify-start mb-3">
-            <div className="bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 p-3 rounded-2xl text-sm">
-              Typing...
-            </div>
-          </div>
-        )}
-        <div ref={chatEndRef}></div>
-      </div>
-
-      <div className="p-4 flex bg-opacity-80 shadow-lg">
-        <input
-          className="flex-1 p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
-          placeholder="Type your message..."
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-        />
-        <button
-          onClick={sendMessage}
-          className="ml-3 bg-blue-500 text-white px-6 py-3 rounded-xl shadow hover:bg-blue-600 transition"
-        >
-          Send
-        </button>
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
