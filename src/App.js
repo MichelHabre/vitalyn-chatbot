@@ -48,20 +48,23 @@ function App() {
   const typeMessage = (text) => {
     return new Promise((resolve) => {
       let i = 0;
+
+      // ✅ Add a new empty bot message BEFORE typing
+      setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
+
       const interval = setInterval(() => {
         setMessages(prev => {
           const updated = [...prev];
-          if (i === 0) updated.push({ text: '', sender: 'bot' });
-          updated[updated.length - 1].text += text[i];
+          updated[updated.length - 1].text += text[i]; // Append to the last message (the bot's message)
           return updated;
         });
         i++;
-        scrollToBottom(); // Smooth scroll while typing
+        scrollToBottom(); // Keep scrolling as it types
         if (i >= text.length) {
           clearInterval(interval);
           resolve();
         }
-      }, 20); // Typing speed
+      }, 25); // Typing speed
     });
   };
 
