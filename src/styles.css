@@ -1,84 +1,114 @@
-/* styles.css */
-
-body {
-  background-color: #0a0a0a;
-  color: #00ff88;
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
+/* Container with side padding for future UI */
 .container {
-  max-width: 600px;
-  margin: 40px auto;
-  background: #121212;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 0 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #0f0;
+  background-color: #000;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Header style */
 h1 {
   text-align: center;
-  color: #00ff88;
+  margin-bottom: 20px;
+  color: #00ff00;
+  text-shadow: 0 0 8px #00ff00;
 }
 
+/* Chat window with full height minus input area, scrollable */
 .chat-window {
-  border: 1px solid #333;
-  border-radius: 8px;
-  padding: 10px;
-  height: 400px;
-  overflow-y: auto;
-  background-color: #1e1e1e;
-}
-
-.message {
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 8px;
-  max-width: 80%;
-  word-wrap: break-word;
-}
-
-.message.bot {
-  background-color: #2a2a2a;
-  color: #00ff88;
-  text-align: left;
-}
-
-.message.user {
-  background-color: #00ff88;
-  color: #000;
-  text-align: right;
-  margin-left: auto;
-}
-
-.input-area {
-  margin-top: 15px;
-  display: flex;
-}
-
-.input-area input {
   flex: 1;
-  padding: 10px;
-  font-size: 16px;
+  border: 2px solid #00ff00;
   border-radius: 8px;
-  border: 1px solid #00ff88;
-  background-color: #1e1e1e;
-  color: #fff;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #001a00;
+  box-shadow: inset 0 0 10px #00ff00;
+  margin-bottom: 15px;
 }
 
-.input-area button {
-  background-color: #00ff88;
-  color: #000;
+/* Messages styling */
+.message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 18px;
+  margin: 8px 0;
+  word-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+/* User message aligned right, green with white text */
+.message.user {
+  background-color: #00cc44;
+  color: white;
+  margin-left: auto;
+  box-shadow: 0 0 10px #00cc44;
+}
+
+/* Bot message aligned left, darker green background */
+.message.bot {
+  background-color: #004d00;
+  color: #ccffcc;
+  margin-right: auto;
+  box-shadow: 0 0 8px #009900;
+}
+
+/* Input area container */
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+/* Input field styling */
+input[type="text"] {
+  flex: 1;
+  padding: 14px 20px;
+  font-size: 1.1rem;
+  border: 2px solid #00ff00;
+  border-radius: 30px;
+  background-color: #001a00;
+  color: #00ff00;
+  outline: none;
+  box-shadow: 0 0 8px #00ff00 inset;
+  transition: border-color 0.3s ease;
+}
+
+/* Input focus effect */
+input[type="text"]:focus {
+  border-color: #00ff88;
+  box-shadow: 0 0 12px #00ff88 inset;
+}
+
+/* Send button */
+button {
+  padding: 14px 25px;
+  font-size: 1.1rem;
+  color: black;
+  background-color: #00ff00;
   border: none;
-  padding: 10px 20px;
-  margin-left: 10px;
-  font-size: 16px;
-  border-radius: 8px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: bold;
+  box-shadow: 0 0 12px #00ff00;
+  transition: background-color 0.3s ease;
 }
 
-.input-area button:hover {
-  background-color: #00cc66;
+/* Button hover */
+button:hover:not(:disabled) {
+  background-color: #00cc00;
+}
+
+/* Disabled states */
+button:disabled,
+input[type="text"]:disabled {
+  background-color: #004d00;
+  color: #003300;
+  cursor: not-allowed;
+  box-shadow: none;
 }

@@ -8,6 +8,14 @@ function App() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const typingRef = useRef(null);
+  const chatWindowRef = useRef(null);
+
+  // Auto-scroll to bottom when messages update
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -20,9 +28,7 @@ function App() {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })
       });
 
@@ -41,7 +47,7 @@ function App() {
     setIsTyping(false);
   };
 
-  // Types out the bot message letter by letter
+  // Typing effect, faster now (15ms per char)
   const typeMessage = (fullText) => {
     return new Promise((resolve) => {
       let index = 0;
@@ -61,14 +67,14 @@ function App() {
           clearInterval(typingRef.current);
           resolve();
         }
-      }, 30); // typing speed in ms per char
+      }, 15); // faster typing speed
     });
   };
 
   return (
     <div className="container">
       <h1>Vitalyn AI Chatbot</h1>
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}>
             {msg.text}
