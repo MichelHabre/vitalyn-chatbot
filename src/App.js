@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './styles.css';  // Make sure you have styles.css in src/
+import './styles.css';
 
 function App() {
   const [messages, setMessages] = useState([
@@ -9,7 +9,7 @@ function App() {
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Scroll to bottom on new message
+  // Auto-scroll when messages change
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -18,8 +18,9 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  // Auto-focus input on load
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   const sendMessage = async () => {
@@ -37,39 +38,39 @@ function App() {
       });
 
       const data = await response.json();
+
       if (data.reply) {
         await typeMessage(data.reply);
       } else {
         await typeMessage("Sorry, something went wrong. Please try again.");
       }
-    } catch (error) {
+    } catch {
       await typeMessage("Sorry, something went wrong. Please try again.");
     }
   };
 
-  // Typing animation fix
+  // FIXED typing effect (includes first character)
   const typeMessage = (text) => {
     return new Promise((resolve) => {
       let i = 0;
       setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
 
-      setTimeout(() => {
-        const interval = setInterval(() => {
-          setMessages(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1].text += text.charAt(i);
-            return updated;
-          });
+      const interval = setInterval(() => {
+        setMessages(prev => {
+          const updated = [...prev];
+          const lastMessage = updated[updated.length - 1];
+          lastMessage.text = text.slice(0, i + 1); // ✅ includes first character
+          return updated;
+        });
 
-          i++;
-          scrollToBottom();
+        i++;
+        scrollToBottom();
 
-          if (i >= text.length) {
-            clearInterval(interval);
-            resolve();
-          }
-        }, 20); // typing speed
-      }, 50); // delay before typing starts
+        if (i >= text.length) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 25); // typing speed
     });
   };
 
@@ -77,9 +78,9 @@ function App() {
     <div className="container">
       <h1 className="title">Vitalyn AI Chatbot</h1>
       <div className="chat-window">
-        {messages.map((msg, i) => (
+        {messages.map((msg, index) => (
           <div
-            key={i}
+            key={index}
             className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
           >
             {msg.text}
