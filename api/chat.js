@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -19,14 +21,9 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',  // or your preferred model
+        model: 'gpt-4o-mini',
         messages: [
-          {
-            role: 'system',
-            content: `You are an AI performance coach specialized in helping athletes optimize their training, equipment settings, mindset, and overall performance. 
-Always provide clear, practical, and encouraging advice tailored to the athlete's specific questions or issues. 
-Avoid generic motivational messages unless specifically asked.`
-          },
+          { role: 'system', content: 'You are an AI chatbot coaching athletes to perform better.' },
           { role: 'user', content: message },
         ],
       }),
@@ -35,14 +32,11 @@ Avoid generic motivational messages unless specifically asked.`
     const data = await response.json();
 
     if (data.error) {
-      res.status(500).json({ error: data.error.message || 'OpenAI API error' });
-      return;
+      res.status(500).json({ error: data.error.message });
+    } else {
+      res.status(200).json({ reply: data.choices[0].message.content });
     }
-
-    const aiReply = data.choices?.[0]?.message?.content || "Sorry, I didn't get that. Could you please rephrase?";
-    res.status(200).json({ reply: aiReply });
-
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
