@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './styles.css';
+import './style.css';
 
 function App() {
   const [messages, setMessages] = useState([
@@ -7,87 +7,80 @@ function App() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const typingRef = useRef(null);
   const chatWindowRef = useRef(null);
 
-  // Auto-scroll to bottom when messages update
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
-
-    const userMessage = { text: input, sender: "user" };
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsTyping(true);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
-      });
-
-      const data = await response.json();
-
-      if (data.reply) {
-        await typeMessage(data.reply);
-      } else {
-        await typeMessage("Sorry, I couldn't process that.");
-      }
-    } catch (error) {
-      console.error(error);
-      await typeMessage("Error contacting AI.");
-    }
-
-    setIsTyping(false);
-  };
-
-  // Typing effect, faster now (15ms per char)
+  // Function to animate typing effect
   const typeMessage = (fullText) => {
-    return new Promise((resolve) => {
-      let index = 0;
-      const newMessage = { text: '', sender: 'bot' };
-      setMessages(prev => [...prev, newMessage]);
-
-      typingRef.current = setInterval(() => {
-        if (index < fullText.length) {
-          newMessage.text += fullText.charAt(index);
-          setMessages(prev => {
-            const msgs = [...prev];
-            msgs[msgs.length - 1] = { ...newMessage };
-            return msgs;
-          });
-          index++;
-        } else {
-          clearInterval(typingRef.current);
+    return new Promise(resolve => {
+      let i = 0;
+      setIsTyping(true);
+      let typed = '';
+      const interval = setInterval(() => {
+        typed += fullText.charAt(i);
+        setMessages(prev => [...prev.slice(0, -1), { text: typed, sender: 'bot' }]);
+        i++;
+        if (i >= fullText.length) {
+          clearInterval(interval);
+          setIsTyping(false);
           resolve();
         }
-      }, 15); // faster typing speed
+      }, 25); // faster typing speed
+    });
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || isTyping) return;
+
+    const userMessage = { text: input.trim(), sender: "user" };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+
+    // Add placeholder bot message for typing effect
+    setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
+
+    // Here replace with actual API call
+    const botReply = await fakeBotReply(userMessage.text);
+
+    await typeMessage(botReply);
+  };
+
+  // Fake bot reply for demo - replace with real API integration
+  const fakeBotReply = (message) => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve("Keep pushing your limits! Stay focused and hydrated. 💪");
+      }, 1000);
     });
   };
 
   return (
     <div className="container">
-      <h1>Vitalyn AI Chatbot</h1>
+      <h1 className="title">Vitalyn AI Coach</h1>
       <div className="chat-window" ref={chatWindowRef}>
         {messages.map((msg, i) => (
-          <div key={i} className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}>
+          <div
+            key={i}
+            className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
+          >
             {msg.text}
           </div>
         ))}
+        {isTyping && <div className="typing-indicator">Vitalyn is typing...</div>}
       </div>
       <div className="input-area">
         <input
+          autoFocus
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && !isTyping && sendMessage()}
-          placeholder="Type your message..."
+          onKeyDown={e => e.key === 'Enter' && sendMessage()}
+          placeholder="Ask Vitalyn for performance tips..."
           disabled={isTyping}
         />
         <button onClick={sendMessage} disabled={isTyping}>Send</button>
