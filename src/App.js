@@ -9,7 +9,6 @@ function App() {
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Auto-scroll when messages change
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -18,7 +17,6 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
-  // Auto-focus input on load
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -49,7 +47,7 @@ function App() {
     }
   };
 
-  // FIXED typing effect (includes first character)
+  // ✅ Updated typing speed to 50ms
   const typeMessage = (text) => {
     return new Promise((resolve) => {
       let i = 0;
@@ -58,8 +56,7 @@ function App() {
       const interval = setInterval(() => {
         setMessages(prev => {
           const updated = [...prev];
-          const lastMessage = updated[updated.length - 1];
-          lastMessage.text = text.slice(0, i + 1); // ✅ includes first character
+          updated[updated.length - 1].text = text.slice(0, i + 1);
           return updated;
         });
 
@@ -70,7 +67,7 @@ function App() {
           clearInterval(interval);
           resolve();
         }
-      }, 25); // typing speed
+      }, 50); // ✅ Typing speed adjusted
     });
   };
 
