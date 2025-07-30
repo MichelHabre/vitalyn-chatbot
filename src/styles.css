@@ -1,114 +1,109 @@
-/* Container with side padding for future UI */
+/* Global reset and dark theme */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #000000; /* Black background */
+  color: #00ff00; /* Neon green text */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container with some padding and max width */
 .container {
   max-width: 900px;
-  margin: 30px auto;
-  padding: 0 30px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #0f0;
-  background-color: #000;
-  border-radius: 12px;
-  min-height: 90vh;
+  margin: 20px auto;
+  padding: 20px 40px;
+  height: 90vh; /* Fill most vertical height */
   display: flex;
   flex-direction: column;
-}
-
-/* Header style */
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+  background-color: #0a0a0a; /* Slightly lighter black for container */
+  border-radius: 12px;
+  box-shadow: 0 0 15px #00ff00aa;
   color: #00ff00;
-  text-shadow: 0 0 8px #00ff00;
 }
 
-/* Chat window with full height minus input area, scrollable */
+/* Chat window styling */
 .chat-window {
-  flex: 1;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px;
   border: 2px solid #00ff00;
   border-radius: 8px;
-  padding: 15px;
-  overflow-y: auto;
-  background-color: #001a00;
-  box-shadow: inset 0 0 10px #00ff00;
+  background-color: #000;
   margin-bottom: 15px;
+  scrollbar-width: thin;
+  scrollbar-color: #00ff00 #000000;
+}
+
+/* Scrollbar for Webkit browsers */
+.chat-window::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background-color: #00ff00;
+  border-radius: 10px;
+  border: 2px solid #000000;
 }
 
 /* Messages styling */
 .message {
-  max-width: 70%;
   padding: 10px 15px;
-  border-radius: 18px;
-  margin: 8px 0;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  max-width: 70%;
   word-wrap: break-word;
-  font-size: 1rem;
-  line-height: 1.3;
 }
 
-/* User message aligned right, green with white text */
-.message.user {
-  background-color: #00cc44;
-  color: white;
-  margin-left: auto;
-  box-shadow: 0 0 10px #00cc44;
+.user {
+  background-color: #004400;
+  color: #aaffaa;
+  align-self: flex-end;
 }
 
-/* Bot message aligned left, darker green background */
-.message.bot {
-  background-color: #004d00;
-  color: #ccffcc;
-  margin-right: auto;
-  box-shadow: 0 0 8px #009900;
+.bot {
+  background-color: #003300;
+  color: #55ff55;
+  align-self: flex-start;
 }
 
-/* Input area container */
+/* Input area styling */
 .input-area {
   display: flex;
   gap: 10px;
 }
 
-/* Input field styling */
 input[type="text"] {
-  flex: 1;
-  padding: 14px 20px;
-  font-size: 1.1rem;
+  flex-grow: 1;
+  padding: 12px 15px;
+  font-size: 16px;
+  border-radius: 25px;
   border: 2px solid #00ff00;
-  border-radius: 30px;
-  background-color: #001a00;
+  background-color: #111111;
   color: #00ff00;
   outline: none;
-  box-shadow: 0 0 8px #00ff00 inset;
   transition: border-color 0.3s ease;
 }
 
-/* Input focus effect */
 input[type="text"]:focus {
-  border-color: #00ff88;
-  box-shadow: 0 0 12px #00ff88 inset;
+  border-color: #55ff55;
 }
 
-/* Send button */
 button {
-  padding: 14px 25px;
-  font-size: 1.1rem;
-  color: black;
   background-color: #00ff00;
   border: none;
-  border-radius: 30px;
-  cursor: pointer;
+  border-radius: 25px;
+  color: black;
   font-weight: bold;
-  box-shadow: 0 0 12px #00ff00;
+  padding: 12px 25px;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-/* Button hover */
-button:hover:not(:disabled) {
-  background-color: #00cc00;
-}
-
-/* Disabled states */
-button:disabled,
-input[type="text"]:disabled {
-  background-color: #004d00;
-  color: #003300;
-  cursor: not-allowed;
-  box-shadow: none;
+button:hover {
+  background-color: #55ff55;
 }
