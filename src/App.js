@@ -7,62 +7,71 @@ function App() {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const chatWindowRef = useRef(null);
+  const inputRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
+  // Auto scroll to bottom on new message
   useEffect(() => {
-    if (chatWindowRef.current) {
-      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Function to animate typing effect
-  const typeMessage = (fullText) => {
-    return new Promise(resolve => {
-      let i = 0;
-      setIsTyping(true);
-      let typed = '';
-      const interval = setInterval(() => {
-        typed += fullText.charAt(i);
-        setMessages(prev => [...prev.slice(0, -1), { text: typed, sender: 'bot' }]);
-        i++;
-        if (i >= fullText.length) {
-          clearInterval(interval);
-          setIsTyping(false);
-          resolve();
+  // Focus input after sending message
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [messages]);
+
+  // Function to simulate typing effect for bot
+  const typeBotReply = async (fullText) => {
+    setIsTyping(true);
+    let displayedText = '';
+    for (let i = 0; i < fullText.length; i++) {
+      displayedText += fullText[i];
+      setMessages(prev => {
+        const msgs = [...prev];
+        // Replace last bot message or add if not exists
+        if (msgs[msgs.length - 1]?.sender === 'bot') {
+          msgs[msgs.length - 1].text = displayedText;
+        } else {
+          msgs.push({ text: displayedText, sender: 'bot' });
         }
-      }, 25); // faster typing speed
-    });
+        return msgs;
+      });
+      await new Promise(r => setTimeout(r, 25)); // Typing speed: 25ms per char (faster)
+    }
+    setIsTyping(false);
+  };
+
+  // Call OpenAI API to get bot reply
+  const getBotReply = async (userMessage) => {
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      const data = await response.json();
+      if (data.error) return "Sorry, something went wrong. Please try again.";
+      return data.reply;
+    } catch {
+      return "Sorry, couldn't connect to AI. Check your connection.";
+    }
   };
 
   const sendMessage = async () => {
     if (!input.trim() || isTyping) return;
 
-    const userMessage = { text: input.trim(), sender: "user" };
+    const userMessage = { text: input.trim(), sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
 
-    // Add placeholder bot message for typing effect
-    setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
-
-    // Here replace with actual API call
-    const botReply = await fakeBotReply(userMessage.text);
-
-    await typeMessage(botReply);
-  };
-
-  // Fake bot reply for demo - replace with real API integration
-  const fakeBotReply = (message) => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve("Keep pushing your limits! Stay focused and hydrated. 💪");
-      }, 1000);
-    });
+    const botReply = await getBotReply(userMessage.text);
+    await typeBotReply(botReply);
   };
 
   return (
     <div className="container">
-      <h1 className="title">Vitalyn AI Coach</h1>
-      <div className="chat-window" ref={chatWindowRef}>
+      <h1>Vitalyn AI Chatbot</h1>
+      <div className="chat-window" role="log" aria-live="polite">
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -71,17 +80,18 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {isTyping && <div className="typing-indicator">Vitalyn is typing...</div>}
+        <div ref={messagesEndRef} />
       </div>
       <div className="input-area">
         <input
-          autoFocus
+          ref={inputRef}
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && sendMessage()}
-          placeholder="Ask Vitalyn for performance tips..."
+          placeholder="Type your message..."
           disabled={isTyping}
+          autoComplete="off"
         />
         <button onClick={sendMessage} disabled={isTyping}>Send</button>
       </div>
