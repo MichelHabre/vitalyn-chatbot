@@ -36,7 +36,7 @@ function App() {
       if (data.error) {
         setMessages(prev => [...prev, { text: "Sorry, something went wrong. Please try again.", sender: "bot" }]);
       } else {
-        await typeMessage(data.reply);
+        await typeMessage(data.reply || "");
       }
     } catch (error) {
       setMessages(prev => [...prev, { text: "Error contacting AI.", sender: "bot" }]);
@@ -49,22 +49,23 @@ function App() {
     return new Promise((resolve) => {
       let i = 0;
 
-      // ✅ Add a new empty bot message BEFORE typing
+      // Add an empty bot message
       setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
 
       const interval = setInterval(() => {
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1].text += text[i]; // Append to the last message (the bot's message)
-          return updated;
-        });
-        i++;
-        scrollToBottom(); // Keep scrolling as it types
-        if (i >= text.length) {
+        if (i < text.length) {
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1].text += text.charAt(i); // Safely append char
+            return updated;
+          });
+          i++;
+          scrollToBottom();
+        } else {
           clearInterval(interval);
           resolve();
         }
-      }, 25); // Typing speed
+      }, 20);
     });
   };
 
