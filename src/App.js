@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './styles.css';
 
 function App() {
@@ -6,7 +6,8 @@ function App() {
     { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingRef = useRef(null);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -14,7 +15,7 @@ function App() {
     const userMessage = { text: input, sender: "user" };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
+    setIsTyping(true);
 
     try {
       const response = await fetch('/api/chat', {
@@ -28,16 +29,40 @@ function App() {
       const data = await response.json();
 
       if (data.reply) {
-        setMessages(prev => [...prev, { text: data.reply, sender: "bot" }]);
+        await typeMessage(data.reply);
       } else {
-        setMessages(prev => [...prev, { text: "Sorry, I couldn't process that.", sender: "bot" }]);
+        await typeMessage("Sorry, I couldn't process that.");
       }
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { text: "Error contacting AI.", sender: "bot" }]);
+      await typeMessage("Error contacting AI.");
     }
 
-    setIsLoading(false);
+    setIsTyping(false);
+  };
+
+  // Types out the bot message letter by letter
+  const typeMessage = (fullText) => {
+    return new Promise((resolve) => {
+      let index = 0;
+      const newMessage = { text: '', sender: 'bot' };
+      setMessages(prev => [...prev, newMessage]);
+
+      typingRef.current = setInterval(() => {
+        if (index < fullText.length) {
+          newMessage.text += fullText.charAt(index);
+          setMessages(prev => {
+            const msgs = [...prev];
+            msgs[msgs.length - 1] = { ...newMessage };
+            return msgs;
+          });
+          index++;
+        } else {
+          clearInterval(typingRef.current);
+          resolve();
+        }
+      }, 30); // typing speed in ms per char
+    });
   };
 
   return (
@@ -49,17 +74,17 @@ function App() {
             {msg.text}
           </div>
         ))}
-        {isLoading && <div className="message bot">Typing...</div>}
       </div>
       <div className="input-area">
         <input
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
+          onKeyDown={e => e.key === 'Enter' && !isTyping && sendMessage()}
           placeholder="Type your message..."
+          disabled={isTyping}
         />
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={sendMessage} disabled={isTyping}>Send</button>
       </div>
     </div>
   );
