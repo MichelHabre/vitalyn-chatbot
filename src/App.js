@@ -49,19 +49,20 @@ function App() {
     return new Promise((resolve) => {
       let i = 0;
 
-      // Add an empty bot message
+      // Add empty bot message first
       setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
 
       const interval = setInterval(() => {
-        if (i < text.length) {
-          setMessages(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1].text += text.charAt(i); // Safely append char
-            return updated;
-          });
-          i++;
-          scrollToBottom();
-        } else {
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1].text += text.charAt(i);
+          return updated;
+        });
+
+        i++;
+        scrollToBottom();
+
+        if (i >= text.length) {
           clearInterval(interval);
           resolve();
         }
