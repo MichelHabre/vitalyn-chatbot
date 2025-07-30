@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles.css';  // Import the CSS file
+import './styles.css'; // Import the CSS file
 
 function App() {
   const [messages, setMessages] = useState([
@@ -9,7 +9,7 @@ function App() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    
+
     const userMessage = { text: input, sender: "user" };
     setMessages([...messages, userMessage]);
     setInput('');
@@ -56,5 +56,3 @@ function App() {
 }
 
 export default App;
-
-<div className="container" style={{ border: '5px solid red' }}>
