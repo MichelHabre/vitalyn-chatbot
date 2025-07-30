@@ -67,7 +67,7 @@ function App() {
           clearInterval(interval);
           resolve();
         }
-      }, 10); // ✅ Typing speed adjusted
+      }, 8); // ✅ Typing speed adjusted
     });
   };
 
