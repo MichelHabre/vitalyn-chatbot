@@ -1,31 +1,43 @@
 import React, { useState } from 'react';
-import './styles.css'; // Import the CSS file
+import './styles.css';
 
 function App() {
   const [messages, setMessages] = useState([
     { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = { text: input, sender: "user" };
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
 
-    // Replace this with real API call later
-    const botReply = await fakeBotReply(input);
-    setMessages(prev => [...prev, { text: botReply, sender: "bot" }]);
-  };
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: input })
+      });
 
-  // Fake bot reply for demo
-  const fakeBotReply = (message) => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve("This is a placeholder reply. Replace with OpenAI API call.");
-      }, 1000);
-    });
+      const data = await response.json();
+
+      if (data.reply) {
+        setMessages(prev => [...prev, { text: data.reply, sender: "bot" }]);
+      } else {
+        setMessages(prev => [...prev, { text: "Sorry, I couldn't process that.", sender: "bot" }]);
+      }
+    } catch (error) {
+      console.error(error);
+      setMessages(prev => [...prev, { text: "Error contacting AI.", sender: "bot" }]);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -33,13 +45,11 @@ function App() {
       <h1>Vitalyn AI Chatbot</h1>
       <div className="chat-window">
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
-          >
+          <div key={i} className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}>
             {msg.text}
           </div>
         ))}
+        {isLoading && <div className="message bot">Typing...</div>}
       </div>
       <div className="input-area">
         <input
