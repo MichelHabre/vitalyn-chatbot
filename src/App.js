@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './styles.css';
 
 function App() {
@@ -6,61 +6,63 @@ function App() {
     { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [typing, setTyping] = useState(false);
+  const chatEndRef = useRef(null);
 
-  // Scroll chat to bottom whenever messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Function to simulate typing effect for bot messages
-  const typeMessage = async (text) => {
-    setIsTyping(true);
-    let displayedText = '';
-    for (let i = 0; i < text.length; i++) {
-      displayedText += text[i];
-      setMessages(prev => {
-        const newMessages = [...prev];
-        newMessages[newMessages.length - 1] = { text: displayedText, sender: 'bot' };
-        return newMessages;
-      });
-      await new Promise(resolve => setTimeout(resolve, 20)); // Faster typing speed
-    }
-    setIsTyping(false);
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const sendMessage = async () => {
-    if (!input.trim() || isTyping) return;
+    if (!input.trim()) return;
 
     const userMessage = { text: input, sender: "user" };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-
-    // Add empty bot message to be typed
-    setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
+    setTyping(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: input })
       });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
+      const data = await res.json();
 
       if (data.error) {
-        await typeMessage('Sorry, something went wrong. Please try again.');
+        setMessages(prev => [...prev, { text: "Sorry, something went wrong. Please try again.", sender: "bot" }]);
       } else {
         await typeMessage(data.reply);
       }
     } catch (error) {
-      await typeMessage('Sorry, something went wrong. Please try again.');
+      setMessages(prev => [...prev, { text: "Error contacting AI.", sender: "bot" }]);
+    } finally {
+      setTyping(false);
     }
+  };
+
+  const typeMessage = (text) => {
+    return new Promise((resolve) => {
+      let i = 0;
+      const interval = setInterval(() => {
+        setMessages(prev => {
+          const updated = [...prev];
+          if (i === 0) updated.push({ text: '', sender: 'bot' });
+          updated[updated.length - 1].text += text[i];
+          return updated;
+        });
+        i++;
+        scrollToBottom(); // Smooth scroll while typing
+        if (i >= text.length) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 20); // Typing speed
+    });
   };
 
   return (
@@ -68,15 +70,12 @@ function App() {
       <h1>Vitalyn AI Chatbot</h1>
       <div className="chat-window">
         {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
-            style={{ textAlign: msg.sender === 'user' ? 'right' : 'left' }}
-          >
+          <div key={i} className={`message ${msg.sender}`}>
             {msg.text}
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        {typing && <div className="typing-indicator">Typing...</div>}
+        <div ref={chatEndRef}></div>
       </div>
       <div className="input-area">
         <input
@@ -87,7 +86,7 @@ function App() {
           placeholder="Type your message..."
           autoFocus
         />
-        <button onClick={sendMessage} disabled={isTyping}>Send</button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );
