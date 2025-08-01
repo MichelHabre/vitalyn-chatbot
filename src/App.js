@@ -78,8 +78,12 @@ function App() {
   return (
     <>
       <header>
-        <img src={logo} alt="Vitalyn Logo" />
-      </header>
+  <img src={logo} alt="Vitalyn Logo" />
+  <div className="brand">
+    <span className="brand-name">Vitalyn.AI</span>
+    <span className="tagline">Your Personal Sports Performance Coach</span>
+  </div>
+    </header>
       <div className="container">
         <h1 className="title">Vitalyn AI Chatbot</h1>
         <div className="chat-window">
