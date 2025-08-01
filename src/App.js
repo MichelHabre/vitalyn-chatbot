@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './styles.css';
 
 function App() {
@@ -6,27 +7,26 @@ function App() {
     { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
-  const chatEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const chatWindowRef = useRef(null);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
   const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { text: input, sender: 'user' };
+    const userMessage = { text: input, sender: "user" };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsTyping(true);
 
     try {
       const response = await fetch('/api/chat', {
@@ -36,63 +36,60 @@ function App() {
       });
 
       const data = await response.json();
+      setIsTyping(false);
 
       if (data.reply) {
-        await typeMessage(data.reply);
+        typeEffect(data.reply);
       } else {
-        await typeMessage("Sorry, something went wrong. Please try again.");
+        setMessages(prev => [...prev, { text: "Sorry, something went wrong. Please try again.", sender: "bot" }]);
       }
-    } catch {
-      await typeMessage("Sorry, something went wrong. Please try again.");
+    } catch (error) {
+      setIsTyping(false);
+      setMessages(prev => [...prev, { text: "Error connecting to AI.", sender: "bot" }]);
     }
   };
 
-  // ✅ Updated typing speed to 50ms
-  const typeMessage = (text) => {
-    return new Promise((resolve) => {
-      let i = 0;
-      setMessages(prev => [...prev, { text: '', sender: 'bot' }]);
+  const typeEffect = (text) => {
+    let i = 0;
+    const typingSpeed = 50;
+    let displayText = "";
 
-      const interval = setInterval(() => {
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1].text = text.slice(0, i + 1);
-          return updated;
-        });
-
-        i++;
-        scrollToBottom();
-
-        if (i >= text.length) {
-          clearInterval(interval);
-          resolve();
+    const interval = setInterval(() => {
+      displayText += text.charAt(i);
+      setMessages(prev => {
+        const updated = [...prev];
+        if (updated[updated.length - 1]?.sender === "bot") {
+          updated[updated.length - 1].text = displayText;
+        } else {
+          updated.push({ text: displayText, sender: "bot" });
         }
-      }, 8); // ✅ Typing speed adjusted
-    });
+        return updated;
+      });
+
+      i++;
+      if (i >= text.length) clearInterval(interval);
+    }, typingSpeed);
   };
 
   return (
     <div className="container">
-      <h1 className="title">Vitalyn AI Chatbot</h1>
-      <div className="chat-window">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
-          >
-            {msg.text}
+      <h1>Vitalyn AI Chatbot</h1>
+      <div className="chat-window" ref={chatWindowRef}>
+        {messages.map((msg, i) => (
+          <div key={i} className={`message ${msg.sender}`}>
+            <ReactMarkdown>{msg.text}</ReactMarkdown>
           </div>
         ))}
-        <div ref={chatEndRef} />
+        {isTyping && <div className="typing-indicator">Vitalyn is thinking...</div>}
       </div>
       <div className="input-area">
         <input
-          ref={inputRef}
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && sendMessage()}
           placeholder="Type your message..."
+          autoFocus
         />
         <button onClick={sendMessage}>Send</button>
       </div>

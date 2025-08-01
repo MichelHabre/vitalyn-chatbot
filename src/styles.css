@@ -1,7 +1,7 @@
 body {
-  background-color: #0a0f0a;
-  color: #e5e5e5;
   font-family: 'Arial', sans-serif;
+  background: #0d1117;
+  color: #fff;
   margin: 0;
   padding: 0;
   display: flex;
@@ -12,54 +12,60 @@ body {
 
 .container {
   width: 90%;
-  max-width: 700px;
-  background: #1b1f1b;
-  border-radius: 12px;
+  max-width: 800px;
+  background: #111;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+  border-radius: 15px;
   display: flex;
   flex-direction: column;
+  height: 90vh;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
 }
 
-.title {
+h1 {
   text-align: center;
   color: #00ff88;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  font-size: 2rem;
 }
 
 .chat-window {
-  background: #121512;
+  flex: 1;
+  overflow-y: auto;
+  background: #1a1a1a;
   padding: 15px;
   border-radius: 10px;
-  height: 450px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin-bottom: 15px;
 }
 
 .message {
-  padding: 10px 15px;
+  margin: 10px 0;
+  padding: 10px 14px;
   border-radius: 12px;
   max-width: 70%;
-  font-size: 16px;
-  line-height: 1.4;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
-.bot {
-  background-color: #00ff88;
-  color: #000;
+.message.user {
+  background: #00ff88;
+  color: #111;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.message.bot {
+  background: #333;
+  color: #fff;
   align-self: flex-start;
 }
 
-.user {
-  background-color: #333;
-  color: #fff;
-  align-self: flex-end; /* ✅ Align user messages to the right */
+.typing-indicator {
+  font-style: italic;
+  color: #bbb;
 }
 
 .input-area {
-  margin-top: 15px;
   display: flex;
   gap: 10px;
 }
@@ -67,26 +73,19 @@ body {
 input {
   flex: 1;
   padding: 12px;
-  border: none;
   border-radius: 8px;
-  font-size: 16px;
-  background: #222;
-  color: #fff;
-}
-
-input:focus {
-  outline: 2px solid #00ff88;
+  border: none;
+  font-size: 1rem;
 }
 
 button {
   background: #00ff88;
-  color: #000;
   border: none;
+  padding: 12px 18px;
   border-radius: 8px;
-  padding: 12px 20px;
-  font-size: 16px;
+  font-weight: bold;
+  color: #111;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 button:hover {
