@@ -3,7 +3,7 @@ import './styles.css';
 
 function App() {
   const [messages, setMessages] = useState([
-    { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
+    { text: "👋 Hi! I'm Vitalyn, your AI sports performance coach. What do you want to improve today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
   const chatEndRef = useRef(null);
@@ -38,15 +38,16 @@ function App() {
       const data = await response.json();
 
       if (data.reply) {
-        await typeMessage(data.reply);
+        await typeMessage(formatResponse(data.reply));
       } else {
-        await typeMessage("Sorry, something went wrong. Please try again.");
+        await typeMessage("❌ Oops! Something went wrong. Try again.");
       }
     } catch {
-      await typeMessage("Sorry, something went wrong. Please try again.");
+      await typeMessage("❌ Oops! Something went wrong. Try again.");
     }
   };
 
+  // Typing effect with 50ms speed
   const typeMessage = (text) => {
     return new Promise((resolve) => {
       let i = 0;
@@ -66,13 +67,26 @@ function App() {
           clearInterval(interval);
           resolve();
         }
-      }, 8); // ✅ Adjusted typing speed like ChatGPT
+      }, 9);
     });
+  };
+
+  // Format response for aesthetic display
+  const formatResponse = (text) => {
+    // Remove Markdown ### and **, replace with emojis and line breaks
+    return text
+      .replace(/###/g, "\n🏆 ")
+      .replace(/\*\*(.*?)\*\*/g, "✨ $1")
+      .replace(/- /g, "• ");
   };
 
   return (
     <div className="container">
-      <h1 className="title">Vitalyn AI Chatbot</h1>
+      <div className="header">
+        <img src="/logo.png" alt="Vitalyn Logo" />
+        <h1>Vitalyn AI</h1>
+        <p>Your Personal Sports Performance Coach</p>
+      </div>
       <div className="chat-window">
         {messages.map((msg, index) => (
           <div

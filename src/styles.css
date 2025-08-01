@@ -1,7 +1,7 @@
 body {
-  background-color: #0a0f0a;
+  background: linear-gradient(135deg, #0b0f0c, #101a13);
   color: #e5e5e5;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
@@ -11,33 +11,48 @@ body {
 }
 
 .container {
-  width: 90%;
-  max-width: 750px;
-  background: #1b1f1b;
-  border-radius: 15px;
+  width: 95%;
+  max-width: 850px;
+  background: #161d16;
+  border-radius: 16px;
   padding: 25px;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 255, 128, 0.25);
   display: flex;
   flex-direction: column;
 }
 
-.title {
+.header {
   text-align: center;
+  margin-bottom: 15px;
+}
+
+.header img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+}
+
+.header h1 {
   color: #00ff88;
-  margin-bottom: 20px;
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 24px;
+  margin: 0;
+}
+
+.header p {
+  color: #b5b5b5;
+  font-size: 14px;
 }
 
 .chat-window {
-  background: #121512;
+  background: #101510;
   padding: 18px;
   border-radius: 12px;
-  height: 500px;
+  height: 460px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  scrollbar-width: thin;
 }
 
 .message {
@@ -46,35 +61,36 @@ body {
   max-width: 75%;
   font-size: 16px;
   line-height: 1.5;
-  word-break: break-word;
+  white-space: pre-line;
 }
 
 .bot {
-  background-color: #00ff88;
+  background: #00ff88;
   color: #000;
   align-self: flex-start;
   font-weight: 500;
 }
 
 .user {
-  background-color: #333;
+  background: #252a25;
   color: #fff;
   align-self: flex-end;
+  font-weight: 400;
 }
 
 .input-area {
-  margin-top: 18px;
+  margin-top: 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 input {
   flex: 1;
   padding: 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
-  background: #222;
+  background: #202720;
   color: #fff;
 }
 
@@ -86,14 +102,19 @@ button {
   background: #00ff88;
   color: #000;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 14px 24px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button:hover {
   background: #00cc66;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
 }

@@ -23,11 +23,9 @@ export default async function handler(req, res) {
         messages: [
           {
             role: 'system',
-            content: `You are Vitalyn, an AI sports performance coach. Respond in a clear, friendly, and motivating tone.
-            - Avoid heavy markdown.
-            - Use short paragraphs, conversational style.
-            - Offer practical advice, but keep it concise and engaging.
-            - End with a follow-up question to keep the conversation going.`
+            content: `You are Vitalyn, an AI sports performance coach. 
+Answer in a friendly, structured way. Use emojis, bullet points, and motivational tone. 
+Keep responses clear, engaging, and helpful.`
           },
           { role: 'user', content: message }
         ]
