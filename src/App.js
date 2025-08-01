@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './styles.css';
+import logo from './logo.png'; // ✅ Add your logo file in src folder
 
 function App() {
   const [messages, setMessages] = useState([
-    { text: "👋 Hi! I'm Vitalyn, your AI sports performance coach. What do you want to improve today?", sender: "bot" }
+    { text: "Hi! I'm Vitalyn, your AI performance coach. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -15,7 +17,7 @@ function App() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -27,6 +29,7 @@ function App() {
     const userMessage = { text: input, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsTyping(true);
 
     try {
       const response = await fetch('/api/chat', {
@@ -38,16 +41,17 @@ function App() {
       const data = await response.json();
 
       if (data.reply) {
-        await typeMessage(formatResponse(data.reply));
+        await typeMessage(data.reply);
       } else {
-        await typeMessage("❌ Oops! Something went wrong. Try again.");
+        await typeMessage("Sorry, something went wrong. Please try again.");
       }
     } catch {
-      await typeMessage("❌ Oops! Something went wrong. Try again.");
+      await typeMessage("Sorry, something went wrong. Please try again.");
+    } finally {
+      setIsTyping(false);
     }
   };
 
-  // Typing effect with 50ms speed
   const typeMessage = (text) => {
     return new Promise((resolve) => {
       let i = 0;
@@ -67,26 +71,19 @@ function App() {
           clearInterval(interval);
           resolve();
         }
-      }, 9);
+      }, 9); // ✅ Natural typing speed
     });
-  };
-
-  // Format response for aesthetic display
-  const formatResponse = (text) => {
-    // Remove Markdown ### and **, replace with emojis and line breaks
-    return text
-      .replace(/###/g, "\n🏆 ")
-      .replace(/\*\*(.*?)\*\*/g, "✨ $1")
-      .replace(/- /g, "• ");
   };
 
   return (
     <div className="container">
       <div className="header">
-        <img src="/logo.png" alt="Vitalyn Logo" />
-        <h1>Vitalyn AI</h1>
-        <p>Your Personal Sports Performance Coach</p>
+        <div className="logo">
+          <img src={logo} alt="Vitalyn Logo" />
+        </div>
+        <h1 className="title">Vitalyn AI Chatbot</h1>
       </div>
+
       <div className="chat-window">
         {messages.map((msg, index) => (
           <div
@@ -96,8 +93,18 @@ function App() {
             {msg.text}
           </div>
         ))}
+
+        {isTyping && (
+          <div className="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        )}
+
         <div ref={chatEndRef} />
       </div>
+
       <div className="input-area">
         <input
           ref={inputRef}

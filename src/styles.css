@@ -1,7 +1,7 @@
 body {
-  background: linear-gradient(135deg, #0b0f0c, #101a13);
+  background-color: #0a0f0a;
   color: #e5e5e5;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
@@ -11,86 +11,85 @@ body {
 }
 
 .container {
-  width: 95%;
-  max-width: 850px;
-  background: #161d16;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 4px 20px rgba(0, 255, 128, 0.25);
+  width: 90%;
+  max-width: 700px;
+  background: #1b1f1b;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .header {
-  text-align: center;
+  display: flex;
+  align-items: center;
   margin-bottom: 15px;
 }
 
-.header img {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 10px;
+.logo {
+  position: absolute;
+  top: 15px;
+  left: 20px;
 }
 
-.header h1 {
+.logo img {
+  width: 80px;
+  height: auto;
+}
+
+.title {
+  text-align: center;
   color: #00ff88;
-  font-size: 24px;
-  margin: 0;
-}
-
-.header p {
-  color: #b5b5b5;
-  font-size: 14px;
+  width: 100%;
+  font-size: 20px;
 }
 
 .chat-window {
-  background: #101510;
-  padding: 18px;
-  border-radius: 12px;
-  height: 460px;
+  background: #121512;
+  padding: 15px;
+  border-radius: 10px;
+  height: 450px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  scrollbar-width: thin;
+  gap: 12px;
 }
 
 .message {
-  padding: 12px 16px;
-  border-radius: 14px;
-  max-width: 75%;
+  padding: 10px 15px;
+  border-radius: 12px;
+  max-width: 70%;
   font-size: 16px;
-  line-height: 1.5;
-  white-space: pre-line;
+  line-height: 1.4;
 }
 
 .bot {
-  background: #00ff88;
+  background-color: #00ff88;
   color: #000;
   align-self: flex-start;
-  font-weight: 500;
 }
 
 .user {
-  background: #252a25;
+  background-color: #333;
   color: #fff;
   align-self: flex-end;
-  font-weight: 400;
 }
 
 .input-area {
-  margin-top: 20px;
+  margin-top: 15px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 input {
   flex: 1;
-  padding: 14px;
+  padding: 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 16px;
-  background: #202720;
+  background: #222;
   color: #fff;
 }
 
@@ -102,19 +101,51 @@ button {
   background: #00ff88;
   color: #000;
   border: none;
-  border-radius: 10px;
-  padding: 14px 24px;
+  border-radius: 8px;
+  padding: 12px 20px;
   font-size: 16px;
-  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease;
 }
 
 button:hover {
   background: #00cc66;
-  transform: scale(1.05);
 }
 
-button:active {
-  transform: scale(0.95);
+/* ✅ Typing indicator dots */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background-color: #00ff88;
+  color: #000;
+  border-radius: 12px;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background-color: #000;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
 }
