@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './styles.css';
-import logo from './logo.png'; // ✅ Add your logo file in src folder
+import logo from './logo.png';
 
 function App() {
   const [messages, setMessages] = useState([
@@ -39,6 +39,7 @@ function App() {
       });
 
       const data = await response.json();
+      setIsTyping(false);
 
       if (data.reply) {
         await typeMessage(data.reply);
@@ -46,9 +47,8 @@ function App() {
         await typeMessage("Sorry, something went wrong. Please try again.");
       }
     } catch {
-      await typeMessage("Sorry, something went wrong. Please try again.");
-    } finally {
       setIsTyping(false);
+      await typeMessage("Sorry, something went wrong. Please try again.");
     }
   };
 
@@ -71,52 +71,45 @@ function App() {
           clearInterval(interval);
           resolve();
         }
-      }, 9); // ✅ Natural typing speed
+      }, 9);
     });
   };
 
   return (
-    <div className="container">
-      <div className="header">
-        <div className="logo">
-          <img src={logo} alt="Vitalyn Logo" />
-        </div>
+    <>
+      <header>
+        <img src={logo} alt="Vitalyn Logo" />
+      </header>
+      <div className="container">
         <h1 className="title">Vitalyn AI Chatbot</h1>
+        <div className="chat-window">
+          {messages.map((msg, index) => (
+            <div key={index} className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}>
+              {msg.text}
+            </div>
+          ))}
+          {isTyping && (
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
+        <div className="input-area">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && sendMessage()}
+            placeholder="Type your message..."
+          />
+          <button onClick={sendMessage}>Send</button>
+        </div>
       </div>
-
-      <div className="chat-window">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message ${msg.sender === 'user' ? 'user' : 'bot'}`}
-          >
-            {msg.text}
-          </div>
-        ))}
-
-        {isTyping && (
-          <div className="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        )}
-
-        <div ref={chatEndRef} />
-      </div>
-
-      <div className="input-area">
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-          placeholder="Type your message..."
-        />
-        <button onClick={sendMessage}>Send</button>
-      </div>
-    </div>
+    </>
   );
 }
 

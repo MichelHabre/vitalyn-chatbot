@@ -1,53 +1,54 @@
 body {
-  background-color: #0a0f0a;
-  color: #e5e5e5;
+  background-color: #0a0e1a; /* Dark navy blue */
+  color: #ffffff;
   font-family: 'Arial', sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+}
+
+header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #10152b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+header img {
+  height: 60px;
 }
 
 .container {
+  margin-top: 100px; /* Push below header */
   width: 90%;
-  max-width: 700px;
-  background: #1b1f1b;
+  max-width: 750px;
+  background: #141a2f;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 119, 255, 0.25);
   display: flex;
   flex-direction: column;
-  position: relative;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.logo {
-  position: absolute;
-  top: 15px;
-  left: 20px;
-}
-
-.logo img {
-  width: 80px;
-  height: auto;
 }
 
 .title {
   text-align: center;
-  color: #00ff88;
-  width: 100%;
-  font-size: 20px;
+  color: #0077ff; /* Bright blue accent */
+  margin-bottom: 15px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .chat-window {
-  background: #121512;
+  background: #10152b;
   padding: 15px;
   border-radius: 10px;
   height: 450px;
@@ -66,13 +67,13 @@ body {
 }
 
 .bot {
-  background-color: #00ff88;
-  color: #000;
+  background-color: #0077ff;
+  color: #fff;
   align-self: flex-start;
 }
 
 .user {
-  background-color: #333;
+  background-color: #1f293d;
   color: #fff;
   align-self: flex-end;
 }
@@ -89,17 +90,17 @@ input {
   border: none;
   border-radius: 8px;
   font-size: 16px;
-  background: #222;
+  background: #1f293d;
   color: #fff;
 }
 
 input:focus {
-  outline: 2px solid #00ff88;
+  outline: 2px solid #0077ff;
 }
 
 button {
-  background: #00ff88;
-  color: #000;
+  background: #0077ff;
+  color: #fff;
   border: none;
   border-radius: 8px;
   padding: 12px 20px;
@@ -109,27 +110,22 @@ button {
 }
 
 button:hover {
-  background: #00cc66;
+  background: #0056cc;
 }
 
-/* ✅ Typing indicator dots */
+/* Typing dots */
 .typing-indicator {
   display: flex;
-  gap: 4px;
-  padding: 8px 12px;
-  background-color: #00ff88;
-  color: #000;
-  border-radius: 12px;
-  width: fit-content;
-  align-self: flex-start;
+  gap: 5px;
+  padding: 10px;
+  color: #0077ff;
 }
 
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background-color: #000;
+  background-color: #0077ff;
   border-radius: 50%;
-  display: inline-block;
   animation: blink 1.4s infinite;
 }
 
